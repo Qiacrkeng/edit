@@ -5,20 +5,23 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.*;
 
-public class FileView extends  Menu{
-    FileView(String text){
+public class FileView extends Menu {
+    FileView(String text) {
         super(text);
         Menu xinjian = new Menu("新建");
         this.add(xinjian);
-        this.addSeparator();  //分割线
+        this.addSeparator(); // 分割线
         xinjian.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                //  对话框
-                int result = JOptionPane.showConfirmDialog(null, "当前的内容需要保存吗？", "确认框", JOptionPane.YES_NO_CANCEL_OPTION);
-                if (result == 0) MainWindow.MainText.setText("");
+                // 对话框
+                int result = JOptionPane.showConfirmDialog(null, "当前的内容需要保存吗？", "确认框",
+                        JOptionPane.YES_NO_CANCEL_OPTION);
+                if (result == 0)
+                    MainWindow.MainText.setText("");
             }
         });
 
@@ -32,11 +35,35 @@ public class FileView extends  Menu{
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 JFileChooser fileChoose = new JFileChooser("F:\\");
-                int value = fileChoose.showOpenDialog(null);
+                fileChoose.showOpenDialog(null);
+                File openFile = fileChoose.getSelectedFile();
+                Reader reader = null;
+                int tempChar;
+                String result = "";
+                try {
+                    // 拿到输入读取流和文件输入流
+                    reader = new InputStreamReader(new FileInputStream(openFile));
+                    while ((tempChar = reader.read()) != -1) {
+                        result += new String(Character.toChars(tempChar));
+                    }
+                    reader.close();
+                } catch (Exception e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                MainWindow.MainText.setText(result);
             }
         });
 
         MenuItem save = new MenuItem("保存...");
+        save.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                JFileChooser fileChoose = new JFileChooser("F:\\");
+                int value = fileChoose.showSaveDialog(null);
+            }
+        });
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
         this.add(save);
         this.addSeparator();
