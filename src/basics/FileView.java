@@ -41,8 +41,8 @@ public class FileView extends Menu {
                 int tempChar;
                 String result = "";
                 try {
-                    // 拿到输入读取流和文件输入流
-                    reader = new InputStreamReader(new FileInputStream(openFile));
+                    // 拿到输入流读取器和文件输入流，并必须指定读取编码
+                    reader = new InputStreamReader(new FileInputStream(openFile), "UTF-8");
                     while ((tempChar = reader.read()) != -1) {
                         result += new String(Character.toChars(tempChar));
                     }
