@@ -1,6 +1,8 @@
 package basics;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -20,8 +22,10 @@ public class FileView extends Menu {
                 // 对话框
                 int result = JOptionPane.showConfirmDialog(null, "当前的内容需要保存吗？", "确认框",
                         JOptionPane.YES_NO_CANCEL_OPTION);
-                if (result == 0)
+                if (result == 0) {
+                    new SaveFileEvent();
                     MainWindow.MainText.setText("");
+                }
             }
         });
 
@@ -34,24 +38,7 @@ public class FileView extends Menu {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                JFileChooser fileChoose = new JFileChooser("F:\\");
-                fileChoose.showOpenDialog(null);
-                File openFile = fileChoose.getSelectedFile();
-                Reader reader = null;
-                int tempChar;
-                String result = "";
-                try {
-                    // 拿到输入流读取器和文件输入流，并必须指定读取编码
-                    reader = new InputStreamReader(new FileInputStream(openFile), "UTF-8");
-                    while ((tempChar = reader.read()) != -1) {
-                        result += new String(Character.toChars(tempChar));
-                    }
-                    reader.close();
-                } catch (Exception e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-                MainWindow.MainText.setText(result);
+                new CreateFileEvent();
             }
         });
 
@@ -60,9 +47,9 @@ public class FileView extends Menu {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                JFileChooser fileChoose = new JFileChooser("F:\\");
-                int value = fileChoose.showSaveDialog(null);
+                new SaveFileEvent();
             }
+
         });
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
         this.add(save);
@@ -76,5 +63,64 @@ public class FileView extends Menu {
                 System.exit(1);
             }
         });
+    }
+}
+
+class SaveFileEvent {
+    SaveFileEvent() {
+        String result = MainWindow.MainText.getText();
+        if (result.length() < 1) {
+            JOptionPane.showMessageDialog(MainWindow.MainJFrame, "不能為空");
+            return;
+        }
+
+        JFileChooser fileChoose = new JFileChooser("F:\\");
+        // 後綴名
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("文本(*.txt)", "txt");
+        fileChoose.setFileFilter(filter);
+
+        File file = fileChoose.getSelectedFile();
+        int status = fileChoose.showSaveDialog(null);
+        if (status == JFileChooser.CANCEL_OPTION)
+            return;
+        // 文件輸出流
+        FileOutputStream fsOut = null;
+        try {
+            String fileName = file.getName(); // 文件名輸入框
+            // 創建文件
+            File newFile = new File(fileChoose.getCurrentDirectory() + "/" + fileName + ".txt");
+            fsOut = new FileOutputStream(newFile);
+            // 寫入
+            fsOut.write(result.getBytes());
+            fsOut.close();
+        } catch (Exception e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+    }
+}
+
+class CreateFileEvent {
+    CreateFileEvent() {
+        JFileChooser fileChoose = new JFileChooser("F:\\");
+        int status = fileChoose.showOpenDialog(null);
+        if (status == JFileChooser.CANCEL_OPTION)
+            return;
+        File openFile = fileChoose.getSelectedFile();
+        Reader reader = null;
+        int tempChar;
+        String result = "";
+        try {
+            // 拿到输入流读取器和文件输入流，并必须指定读取编码
+            reader = new InputStreamReader(new FileInputStream(openFile), "UTF-8");
+            while ((tempChar = reader.read()) != -1) {
+                result += new String(Character.toChars(tempChar));
+            }
+            reader.close();
+        } catch (Exception e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        MainWindow.MainText.setText(result);
     }
 }
