@@ -4,9 +4,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.*;
 
 public class FileView extends Menu {
@@ -24,7 +22,7 @@ public class FileView extends Menu {
                         JOptionPane.YES_NO_CANCEL_OPTION);
                 if (result == 0) {
                     new SaveFileEvent();
-                    MainWindow.MainText.setText("");
+                    MainWindow.mMainText.setText("");
                 }
             }
         });
@@ -34,6 +32,12 @@ public class FileView extends Menu {
         // 设置修改键，它能直接调用菜单项的操作侦听器而不必显示菜单的层次结构
         open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
         // 在给出一个数字键代码和一组修饰符的情况下，返回 KeyStroke 的一个共享实例。
+        // open.addKeyListener(new KeyAdapter() {
+        // public void keyPressed(KeyEvent e) {
+        // super.keyPressed(e);
+        // new CreateFileEvent();
+        // }
+        // });
         open.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -41,6 +45,7 @@ public class FileView extends Menu {
                 new CreateFileEvent();
             }
         });
+        // open.addKeyListener(new Key);
 
         MenuItem save = new MenuItem("保存...");
         save.addMouseListener(new MouseAdapter() {
@@ -49,9 +54,14 @@ public class FileView extends Menu {
                 super.mousePressed(e);
                 new SaveFileEvent();
             }
-
         });
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
+        // save.addKeyListener(new KeyAdapter() {
+        // public void keyPressed(KeyEvent e) {
+        // super.keyPressed(e);
+        // new SaveFileEvent();
+        // }
+        // });
         this.add(save);
         this.addSeparator();
         MenuItem exitB = new MenuItem("退出...");
@@ -68,9 +78,9 @@ public class FileView extends Menu {
 
 class SaveFileEvent {
     SaveFileEvent() {
-        String result = MainWindow.MainText.getText();
+        String result = MainWindow.mMainText.getText();
         if (result.length() < 1) {
-            JOptionPane.showMessageDialog(MainWindow.MainJFrame, "不能為空");
+            JOptionPane.showMessageDialog(MainWindow.mMainJFrame, "文本不能為空");
             return;
         }
 
@@ -121,6 +131,6 @@ class CreateFileEvent {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-        MainWindow.MainText.setText(result);
+        MainWindow.mMainText.setText(result);
     }
 }
